@@ -9,4 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
       infoElement.textContent += `Cookies persistentes : ${response.cookies.persistentCookies}\n`;
     });
   });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    browser.runtime.sendMessage({action: "getLocalStorage"}, function(response) {
+      const cacheElement = document.getElementById('cache');
+      cacheElement.textContent = "Local Storage:\n";
+      cacheElement.textContent += `Total de dados: ${response.localStorageItems}\n`;
+    });
+  });
   

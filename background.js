@@ -7,12 +7,10 @@ function getCurrentTabUrl(callback) {
   });
 }
 
-// Use the function to get the current tab URL
 getCurrentTabUrl(function(url) {
   console.log(url);
 });
 
-// Listen for tab changes and update the currentTabUrl
 browser.tabs.onActivated.addListener(function(activeInfo) {
   getCurrentTabUrl(function(url) {
     console.log(url);
@@ -47,10 +45,26 @@ function logCookies(url, callback) {
   });
 }
 
+function getLocalStorageItems(callback) {
+  const code = 'localStorage.length;';
+
+  browser.tabs.executeScript({
+    code: code
+  }, function(results) {
+    callback(results[0]);
+  });
+}
+
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "logCookies") {
     logCookies(currentTabUrl.hostname, function(cookieDetails) {
       sendResponse({cookies: cookieDetails});
+    });
+    return true;
+  }
+  else if (message.action === "getLocalStorage") {
+    getLocalStorageItems(function(items) {
+      sendResponse({localStorageItems: items});
     });
     return true;
   }
