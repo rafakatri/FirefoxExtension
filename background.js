@@ -30,7 +30,7 @@ function logCookies(url, callback) {
     };
 
     cookies.forEach(cookie => {
-      if (cookie.domain === url) {
+      if (cookie.domain === url || cookie.domain === url.replace("www", "")) {
         cookieDetails.firstParty++;
       } else {
         cookieDetails.thirdParty++;
