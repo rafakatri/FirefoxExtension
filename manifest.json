@@ -4,10 +4,13 @@
     "version": "1.0",
     "description": "Displays browser information such as cookies and cache.",
     "permissions": [
-      "cookies",
-      "storage",
       "webRequest",
-      "*://*/*"
+      "webRequestBlocking",
+      "cookies",
+      "activeTab",
+      "tabs",
+      "storage",
+      "<all_urls>"
     ],
     "background": {
       "scripts": ["background.js"]
