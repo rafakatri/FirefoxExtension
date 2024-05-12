@@ -17,4 +17,13 @@ document.addEventListener('DOMContentLoaded', function() {
       cacheElement.textContent += `Total de dados: ${response.localStorageItems}\n`;
     });
   });
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    browser.runtime.sendMessage({action: "getThirdParty"}, function(response) {
+      const thirdElement = document.getElementById('third');
+      thirdElement.textContent = "Conexoes Third party: (recarregue a pagina para atualizar)\n";
+      thirdElement.textContent += `${response.thirdPartyConnections}\n`;
+    });
+  });
   

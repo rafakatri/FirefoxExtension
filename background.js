@@ -1,4 +1,5 @@
 let currentTabUrl = null;
+let thirdPartyConnections = new Set();
 
 function getCurrentTabUrl(callback) {
   browser.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -12,10 +13,24 @@ getCurrentTabUrl(function(url) {
 });
 
 browser.tabs.onActivated.addListener(function(activeInfo) {
+  thirdPartyConnections.clear();
   getCurrentTabUrl(function(url) {
     console.log(url);
   });
 });
+
+browser.webRequest.onBeforeRequest.addListener(
+  (details) => {
+    const requestUrl = new URL(details.url);
+    browser.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      const tabUrl = new URL(tabs[0].url);
+      if (!requestUrl.hostname.endsWith(tabUrl.hostname)) {
+        thirdPartyConnections.add(requestUrl.hostname);
+      }
+    });
+  },
+  {urls: ["<all_urls>"]}
+);
 
 function logCookies(url, callback) {
   browser.cookies.getAll({}, function(cookies) {
@@ -28,7 +43,7 @@ function logCookies(url, callback) {
     };
 
     cookies.forEach(cookie => {
-      if (cookie.domain === url || cookie.domain === url.replace("www", "")) {
+      if (cookie.domain === url || cookie.domain === `.${url}`) {
         cookieDetails.firstParty++;
       } else {
         cookieDetails.thirdParty++;
@@ -65,6 +80,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   else if (message.action === "getLocalStorage") {
     getLocalStorageItems(function(items) {
       sendResponse({localStorageItems: items});
+    });
+    return true;
+  }
+  else if (message.action === "getThirdParty") {
+    browser.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      const thirdPartyConnectionsString = Array.from(thirdPartyConnections).join('\n');
+      sendResponse({thirdPartyConnections: thirdPartyConnectionsString});
     });
     return true;
   }
