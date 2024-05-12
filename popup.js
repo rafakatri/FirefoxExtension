@@ -27,3 +27,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
+  document.addEventListener('DOMContentLoaded', function() {
+    const fingerprintElement = document.getElementById('fingerprint');
+    const canvasElements = document.getElementsByTagName('canvas');
+    fingerprintElement.textContent = canvasElements.length > 0 ? "Canvas detectado:\n" : "Canvas nao detectado\n";
+
+    browser.runtime.onMessage.addListener((message) => {
+        if (message.action === "fingerprintDetected") {
+            const fingerprintElement = document.getElementById('fingerprint');
+            fingerprintElement.textContent = "Fingerprint detectada:\n";
+            const img = document.createElement('img');
+            img.src = message.dataUrl;
+            fingerprintElement.appendChild(img);
+        }
+    });
+});
+  
