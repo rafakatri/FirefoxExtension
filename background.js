@@ -33,13 +33,14 @@ browser.webRequest.onBeforeRequest.addListener(
 );
 
 function logCookies(url, callback) {
+  url = url.replace(/^www\./, '');
   browser.cookies.getAll({}, function(cookies) {
     const cookieDetails = {
       total: cookies.length,
       firstParty: 0,
       thirdParty: 0,
       sessionCookies: 0,
-      persistentCookies: 0
+      persistentCookies: 0,
     };
 
     cookies.forEach(cookie => {
